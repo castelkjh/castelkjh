@@ -226,7 +226,7 @@
   .confetti{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;}
   .confetti i{position:absolute;width:8px;height:14px;top:-20px;opacity:0;}
   @media (prefers-reduced-motion:reduce){.seg,.sheet,.scrim,.panel,.seg.now{transition:none;animation:none;}}
-</style>
+#notifTime{margin-left:8px;font-family:inherit;font-size:13px;border:1px solid #E5E8EB;border-radius:8px;padding:3px 6px;background:#fff;color:#191F28}.notif.on{box-shadow:inset 0 0 0 2px #6C4EE3}#notifBell{cursor:pointer;font-size:18px}</style>
 </head>
 <body>
 <div class="app" id="app">
@@ -291,8 +291,8 @@
     </div>
     <div class="actions" id="actions"></div>
     <div class="notif" id="notifRow">
-      <div class="l"><b>응원 알림</b><span id="notifSub">24시간마다 응원 메시지를 보내드려요</span></div>
-      <span class="notifbell">🔔</span>
+      <div class="l"><b>응원 알림</b><span id="notifSub">탭해서 매일 알림 시간을 설정하세요.</span><input type="time" id="notifTime" value="20:00" onchange="mcNotifTime(this.value)"></div>
+      <span class="notifbell" id="notifBell" onclick="mcNotifToggle()">🔕</span>
     </div>
   </div>
 
@@ -453,7 +453,7 @@
 </div>
 
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
-<script>
+<script type="module">import * as AIT from "@apps-in-toss/web-framework";window.__mc_schedule=function(d){try{return AIT.scheduleLocalNotification&&AIT.scheduleLocalNotification(d)}catch(e){console.error(e)}};window.__mc_cancel=function(){try{return AIT.cancelAllLocalNotifications&&AIT.cancelAllLocalNotifications()}catch(e){console.error(e)}};</script><script>
 /* 카카오톡 직접 공유를 켜려면 카카오 디벨로퍼스의 JavaScript 키를 넣으세요 (없으면 폰 공유시트/복사로 동작) */
 window.__KAKAO_JS_KEY='';
 const DAY=86400000, GOAL=21, STORE_KEY='challenge21:state';
@@ -1131,6 +1131,6 @@ document.getElementById('obJoin').onclick=()=>{
   if(state.user) ensureUser();
   setInterval(()=>{ fireDueMessages(); updateCountdown(); },1000);
   setInterval(pollGroup, 10000); })();
-</script>
+;function mcNextFire(h){var p=(h||'20:00').split(':');var d=new Date();d.setHours(+p[0]||20,+p[1]||0,0,0);if(d.getTime()<=Date.now())d.setDate(d.getDate()+1);return d.getTime();}function mcNotifUpdateUI(){var on=localStorage.getItem('mc_notif_on')==='1';var t=localStorage.getItem('mc_notif_time')||'20:00';var sub=document.getElementById('notifSub'),inp=document.getElementById('notifTime'),bell=document.getElementById('notifBell'),row=document.getElementById('notifRow');if(inp)inp.value=t;if(sub)sub.textContent=on?('매일 '+t+'에 응원 메시지를 보내드려요.'):'탭해서 매일 알림 시간을 설정하세요.';if(bell)bell.textContent=on?'🔔':'🔕';if(row){if(on)row.classList.add('on');else row.classList.remove('on');}}function mcNotifApply(){if(localStorage.getItem('mc_notif_on')!=='1')return;var t=localStorage.getItem('mc_notif_time')||'20:00';if(window.__mc_cancel)window.__mc_cancel();if(window.__mc_schedule)window.__mc_schedule({fireDate:mcNextFire(t),repeatInterval:'day',alertTitle:'잠깐 멈칫',alertBody:'오늘 불평 없이 보냈나요? 감사도 하나 남겨봐요.'});}function mcNotifToggle(){var on=localStorage.getItem('mc_notif_on')==='1';if(on){localStorage.setItem('mc_notif_on','0');if(window.__mc_cancel)window.__mc_cancel();}else{localStorage.setItem('mc_notif_on','1');if(!localStorage.getItem('mc_notif_time'))localStorage.setItem('mc_notif_time','20:00');mcNotifApply();}mcNotifUpdateUI();}function mcNotifTime(v){localStorage.setItem('mc_notif_time',v||'20:00');if(localStorage.getItem('mc_notif_on')==='1')mcNotifApply();mcNotifUpdateUI();}window.addEventListener('load',function(){try{mcNotifUpdateUI();mcNotifApply();}catch(e){}});</script>
 </body>
 </html>
